@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="JBRperf:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/JBRperf_jar</output-path>
+    <root id="archive" name="JBRperf.jar">
+      <element id="module-output" name="JBRperf" />
+    </root>
+  </artifact>
+</component>
