@@ -75,13 +75,16 @@ public class ScoresComparator {
 
     private static void compareResults(String scoreName, String currentDir, String referenceDir, String cmpresDir,
                                        Float deviation) throws IOException {
-        logger.log("benchmark log file:" + currentDir);
-        logger.log("reference result  :" + referenceDir);
-        logger.log("comparison result :" + cmpresDir);
+        logger.log("processign logs for :" + scoreName);
 
         Map<String, Float> curData = dataReader.getScores(scoreName);
 
-        File file = new File(dataReader.getScoreFile(referenceDir, scoreName));
+        String scoreFileName = dataReader.getScoreFile(referenceDir, scoreName);
+        File file = new File(scoreFileName);
+        if ( !file.exists()) {
+            logger.log(scoreFileName + " does not exist, skipping scores comnparison for " + scoreName);
+            return;
+        }
         Scanner input = new Scanner(file);
 
         boolean isReadingStarted = false;
@@ -99,10 +102,10 @@ public class ScoresComparator {
             String line = input.nextLine();
             String[] scoreNameValue = line.split("\t");
 
-            String fullTestName = TEST_PREFIX + scoreNameValue[0];
+            String fullTestName = TEST_PREFIX + scoreNameValue[0].trim();
             logger.logTC("##teamcity[testStarted name=\'" + fullTestName + "\']");
 
-            float currentValue = curData.get(scoreNameValue[0]);
+            float currentValue = curData.get(fullTestName);
             float referenceValue = Float.valueOf(scoreNameValue[1]);
             float diff = (referenceValue != 0) ? (100 - currentValue / referenceValue * 100) : Float.NaN;
 
@@ -113,9 +116,11 @@ public class ScoresComparator {
                 failed = (currentValue > referenceValue * (1 + deviation));
 
             logger.logTC("##teamcity[buildStatisticValue key=\'" + fullTestName + "\' value=\'" + diff + "\']");
+            logger.log("buildStatisticValue key=\'" + fullTestName + "\' value=\'" + diff);
             if (failed) {
                 printWriter.print(FAILED_SIGN);
                 logger.logTC("##teamcity[testFailed name=\'" + fullTestName + "\' message=\'" + "\']");
+                logger.logf("***testFailed name=\'%s\' currentValue=%7.2f referenceValue=%7.2f diff=%6.2f",fullTestName, currentValue, referenceValue, diff);
             } else {
                 printWriter.print(PASSED_SIGN);
             }

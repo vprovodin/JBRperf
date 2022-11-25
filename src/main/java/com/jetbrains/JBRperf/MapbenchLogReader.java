@@ -3,6 +3,8 @@ package com.jetbrains.JBRperf;
 import java.io.*;
 import java.util.*;
 
+import static com.jetbrains.JBRperf.ScoresComparator.TEST_PREFIX;
+
 public class MapbenchLogReader extends DataLogReader {
 
     private ArrayList<String> valuableLines = new ArrayList<String>(); // rows
@@ -104,7 +106,9 @@ public class MapbenchLogReader extends DataLogReader {
             if (!(scores[i + 1].compareToIgnoreCase(scoreName) == 0)) continue;
 
             for (int j = 0; j < metrics.length; j++)
-                map.putIfAbsent(metrics[j].trim() + "." + scores[i + 1], values[j][i+1]);
+                map.putIfAbsent(ScoresComparator.TEST_PREFIX + metrics[j].trim()
+                        + "." + scores[i + 1], values[j][i+1]);
+            break;
         }
 
         return map;
