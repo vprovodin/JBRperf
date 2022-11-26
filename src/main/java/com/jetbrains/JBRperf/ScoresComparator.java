@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.NumberFormat;
 import java.util.*;
 
 public class ScoresComparator {
@@ -105,8 +106,19 @@ public class ScoresComparator {
             String fullTestName = TEST_PREFIX + scoreNameValue[0].trim();
             logger.logTC("##teamcity[testStarted name=\'" + fullTestName + "\']");
 
+            if (curData == null || curData.get(fullTestName)==null) {
+                logger.log("Cannot get value for " + fullTestName);
+                continue;
+            }
             float currentValue = curData.get(fullTestName);
-            float referenceValue = Float.valueOf(scoreNameValue[1]);
+            float referenceValue;
+            Locale locale = Locale.getDefault();
+            NumberFormat numberFormat = NumberFormat.getInstance(locale);
+            try {
+                referenceValue = Float.valueOf(scoreNameValue[1]);
+            } catch (NumberFormatException e) {
+                referenceValue = Float.valueOf(scoreNameValue[1].replace(',','.'));
+            }
             float diff = (referenceValue != 0) ? (100 - currentValue / referenceValue * 100) : Float.NaN;
 
             boolean failed = false;
@@ -124,7 +136,7 @@ public class ScoresComparator {
             } else {
                 printWriter.print(PASSED_SIGN);
             }
-            printWriter.printf("%-50s\t%7.2f\t%7.2f\t%6.2f\t%5.2f%n",
+            printWriter.printf(Locale.UK, "%-50s\t%7.2f\t%7.2f\t%6.2f\t%5.2f%n",
                     scoreNameValue[0], referenceValue, currentValue, diff, deviation);
             logger.logTC("##teamcity[testFinished name=\'" + fullTestName + "\' duration=\'" + diff + "\']");
         }

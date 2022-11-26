@@ -3,8 +3,6 @@ package com.jetbrains.JBRperf;
 import java.io.*;
 import java.util.*;
 
-import static com.jetbrains.JBRperf.ScoresComparator.TEST_PREFIX;
-
 public class MapbenchLogReader extends DataLogReader {
 
     private ArrayList<String> valuableLines = new ArrayList<String>(); // rows
@@ -83,10 +81,11 @@ public class MapbenchLogReader extends DataLogReader {
             if (!scores_to_print.contains(scores[i + 1])) continue;
 
             String fileName = getScoreFile(outDir, scores[i + 1]);
+
             PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
             printWriter.println(scores[0] + "\t" + scores[i + 1]);
             for (int j = 0; j < metrics.length; j++)
-                printWriter.printf("%-50s\t%7.2f%n", metrics[j].trim() + "." + scores[i + 1], values[j][i+1]);
+                printWriter.printf(Locale.UK, "%-50s\t%7.2f%n", metrics[j].trim() + "." + scores[i + 1], values[j][i+1]);
 
             printWriter.close();
             scoreMetrics.add(fileName);
