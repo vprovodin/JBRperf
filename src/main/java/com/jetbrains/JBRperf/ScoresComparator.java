@@ -127,12 +127,12 @@ public class ScoresComparator {
             else
                 failed = (currentValue > referenceValue * (1 + deviation));
 
-            logger.logTC("##teamcity[buildStatisticValue key=\'" + fullTestName + "\' value=\'" + diff + "\']");
-            logger.log("buildStatisticValue key=\'" + fullTestName + "\' value=\'" + diff);
+            logger.logTCf("##teamcity[buildStatisticValue key=\'%s\' value=\'%f\']\n", fullTestName, currentValue);
+            logger.logf("buildStatisticValue key=\'%s\' value=\'%7.2f'\n", fullTestName, currentValue);
             if (failed) {
                 printWriter.print(FAILED_SIGN);
-                logger.logTC("##teamcity[testFailed name=\'" + fullTestName + "\' message=\'" + "\']");
-                logger.logf("***testFailed name=\'%s\' currentValue=%7.2f referenceValue=%7.2f diff=%6.2f",fullTestName, currentValue, referenceValue, diff);
+                logger.logTCf("##teamcity[testFailed name=\'%s\' message=\'currentValue=%7.2f referenceValue=%7.2f diff=%6.2f\']\n", fullTestName, currentValue, referenceValue, diff);
+                logger.logf("***testFailed name=\'%s\' currentValue=%7.2f referenceValue=%7.2f diff=%6.2f\n",fullTestName, currentValue, referenceValue, diff);
             } else {
                 printWriter.print(PASSED_SIGN);
             }
