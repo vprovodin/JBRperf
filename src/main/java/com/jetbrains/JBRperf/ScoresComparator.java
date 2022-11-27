@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.NumberFormat;
 import java.util.*;
 
 public class ScoresComparator {
@@ -112,8 +111,6 @@ public class ScoresComparator {
             }
             float currentValue = curData.get(fullTestName);
             float referenceValue;
-            Locale locale = Locale.getDefault();
-            NumberFormat numberFormat = NumberFormat.getInstance(locale);
             try {
                 referenceValue = Float.valueOf(scoreNameValue[1]);
             } catch (NumberFormatException e) {
@@ -127,12 +124,11 @@ public class ScoresComparator {
             else
                 failed = (currentValue > referenceValue * (1 + deviation));
 
-            logger.logTC("##teamcity[buildStatisticValue key=\'" + fullTestName + "\' value=\'" + currentValue + "\']");
+            logger.logTCf("##teamcity[buildStatisticValue key=\'%s\' value=\'%f\']\n", fullTestName, currentValue);
             logger.logf("buildStatisticValue key=\'%s\' value=\'%7.2f'\n", fullTestName, currentValue);
             if (failed) {
                 printWriter.print(FAILED_SIGN);
-                logger.logTCf("##teamcity[testFailed name=\'" + fullTestName + "\' message=\'currentValue=" + currentValue
-                        + " referenceValue=" + referenceValue + " diff=" + diff + "\']");
+                logger.logTCf("##teamcity[testFailed name=\'%s\' message=\'currentValue=%7.2f referenceValue=%7.2f diff=%6.2f\']\n", fullTestName, currentValue, referenceValue, diff);
                 logger.logf("***testFailed name=\'%s\' currentValue=%7.2f referenceValue=%7.2f diff=%6.2f\n",fullTestName, currentValue, referenceValue, diff);
             } else {
                 printWriter.print(PASSED_SIGN);

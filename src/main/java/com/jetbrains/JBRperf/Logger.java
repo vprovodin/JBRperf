@@ -1,5 +1,7 @@
 package com.jetbrains.JBRperf;
 
+import java.util.Locale;
+
 enum Level {
     SEVERE,
     WARNING,
@@ -14,7 +16,7 @@ public class Logger {
         System.out.println(message);
     }
     public void logf(String format, Object ... args) {
-        System.out.printf(format, args);
+        System.out.printf(Locale.UK, format, args);
     }
     public void logTC(String message) {
         if (ScoresComparator.DO_TC_STATISTIC) log(message);
