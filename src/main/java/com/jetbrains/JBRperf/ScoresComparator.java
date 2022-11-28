@@ -1,9 +1,6 @@
 package com.jetbrains.JBRperf;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 public class ScoresComparator {
@@ -43,8 +40,30 @@ public class ScoresComparator {
     static final String FAILED_SIGN = " * ";
     static final String PASSED_SIGN = "   ";
 
+    static final private String [] delimiters = {"_", "\\."};
 
-    static void readArgs(String[] args) {
+    static DataLogReader identifyLogReader() throws UnknownLogReaderException {
+        DataLogReader reader = null;
+
+        for (String delimiter : delimiters) {
+            String[] arr = CURRENT_TESTRESULTS_FILE.split(delimiter);
+            if (arr.length > 0) {
+                switch (arr[0]) {
+                    case "mapbench":
+                        reader = new MapbenchLogReader();
+                        break;
+                    case "render":
+                        reader = new RenderLogReader();
+                        break;
+                }
+            }
+            if (reader != null)
+                return reader;
+        }
+        throw new UnknownLogReaderException(CURRENT_TESTRESULTS_FILE);
+    }
+
+    static void readArgs(String[] args) throws UnknownLogReaderException {
         if (args.length < 3) {
             printUsage();
             System.exit(1);
@@ -70,95 +89,28 @@ public class ScoresComparator {
             if (!options[6].isEmpty())
                 RESULT_INTERPRETER = ResultInterpreter.valueOf(options[6]);
 
-        dataReader = new MapbenchLogReader();
-    }
-
-    private static void compareResults(String scoreName, String currentDir, String referenceDir, String cmpresDir,
-                                       Float deviation) throws IOException {
-        logger.log("processign logs for :" + scoreName);
-
-        Map<String, Float> curData = dataReader.getScores(scoreName);
-
-        String scoreFileName = dataReader.getScoreFile(referenceDir, scoreName);
-        File file = new File(scoreFileName);
-        if ( !file.exists()) {
-            logger.log(scoreFileName + " does not exist, skipping scores comnparison for " + scoreName);
-            return;
-        }
-        Scanner input = new Scanner(file);
-
-        boolean isReadingStarted = false;
-        PrintWriter printWriter = new PrintWriter(new FileWriter("regression_" + scoreName + ".txt"));
-
-        while (input.hasNextLine()) {
-            if (!isReadingStarted) {
-                isReadingStarted = true;
-                if (IS_HEADER_INCLUDED) {
-                    printWriter.println(input.nextLine());
-                    continue;
-                }
-            }
-
-            String line = input.nextLine();
-            String[] scoreNameValue = line.split("\t");
-
-            String fullTestName = TEST_PREFIX + scoreNameValue[0].trim();
-            logger.logTC("##teamcity[testStarted name=\'" + fullTestName + "\']");
-
-            if (curData == null || curData.get(fullTestName)==null) {
-                logger.log("Cannot get value for " + fullTestName);
-                continue;
-            }
-            float currentValue = curData.get(fullTestName);
-            float referenceValue;
-            try {
-                referenceValue = Float.valueOf(scoreNameValue[1]);
-            } catch (NumberFormatException e) {
-                referenceValue = Float.valueOf(scoreNameValue[1].replace(',','.'));
-            }
-            float diff = (referenceValue != 0) ? (100 - currentValue / referenceValue * 100) : Float.NaN;
-
-            boolean failed = false;
-            if (RESULT_INTERPRETER == ResultInterpreter.higher_better)
-                failed = (currentValue < referenceValue * (1 + deviation));
-            else
-                failed = (currentValue > referenceValue * (1 + deviation));
-
-            logger.logTCf("##teamcity[buildStatisticValue key=\'%s\' value=\'%f\']\n", fullTestName, currentValue);
-            logger.logf("buildStatisticValue key=\'%s\' value=\'%7.2f'\n", fullTestName, currentValue);
-            if (failed) {
-                printWriter.print(FAILED_SIGN);
-                logger.logTCf("##teamcity[testFailed name=\'%s\' message=\'currentValue=%7.2f referenceValue=%7.2f diff=%6.2f\']\n", fullTestName, currentValue, referenceValue, diff);
-                logger.logf("***testFailed name=\'%s\' currentValue=%7.2f referenceValue=%7.2f diff=%6.2f\n",fullTestName, currentValue, referenceValue, diff);
-            } else {
-                printWriter.print(PASSED_SIGN);
-            }
-            printWriter.printf(Locale.UK, "%-50s\t%7.2f\t%7.2f\t%6.2f\t%5.2f%n",
-                    scoreNameValue[0], referenceValue, currentValue, diff, deviation);
-            logger.logTC("##teamcity[testFinished name=\'" + fullTestName + "\' duration=\'" + diff + "\']");
-        }
-        printWriter.close();
+        dataReader = identifyLogReader();
     }
 
     static int  scoreNumber = 0;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, UnknownLogReaderException {
 
         readArgs(args);
 
         dataReader.readLog(CURRENT_TESTRESULTS_FILE);
-        List<String> scoreNames = dataReader.getScorenNamesList();
-
+        List<String> scoreNames = dataReader.getScoreNamesList();
         dataReader.storeScores("./");
-
-        scoreNames.forEach((scoreName) -> {
-            try {
-                float deviation = Float.valueOf(DEVIATIONS[scoreNumber++]);
-
-                compareResults(scoreName, "./", "prev", "./", deviation);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        if (scoreNames.isEmpty())
+            dataReader.compareResults("./", "prev", "./", Float.valueOf(DEVIATIONS[0]));
+        else
+            scoreNames.forEach((scoreName) -> {
+                try {
+                    float deviation = Float.valueOf(DEVIATIONS[scoreNumber++]);
+                    dataReader.compareResults(scoreName, "./", "prev", "./", deviation);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
     }
 }
