@@ -60,8 +60,7 @@ public class RenderLogReader extends DataLogReader {
         PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
         for (int i = 0; i < metrics.size() - 1; i++) {
             float value = values.get(metrics.get(i));
-            //printWriter.println(metrics.get(i) + " : " + value);
-            printWriter.printf(Locale.UK, "%-30s : %7.2f%n", metrics.get(i), value);
+            printWriter.printf(metrics.get(i) +"\t" + value);
             scoreMetrics.add(fileName);
         }
         printWriter.close();
