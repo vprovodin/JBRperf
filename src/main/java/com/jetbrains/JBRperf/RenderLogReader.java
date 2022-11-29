@@ -20,6 +20,8 @@ public class RenderLogReader extends DataLogReader {
         int i = 0;
         while (input.hasNextLine()) {
             String line = input.nextLine();
+            if (!line.contains(":") || !line.contains("FPS")) continue;
+
             String[] scores = line.split(":");
             if (scores.length == 0) break;
 
