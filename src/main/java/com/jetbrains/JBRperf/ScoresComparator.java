@@ -45,9 +45,11 @@ public class ScoresComparator {
     static DataLogReader identifyLogReader() throws UnknownLogReaderException {
         DataLogReader reader = null;
 
+        String readerName = "";
         for (String delimiter : delimiters) {
             String[] arr = CURRENT_TESTRESULTS_FILE.split(delimiter);
             if (arr.length > 0) {
+                readerName = arr[0];
                 switch (arr[0]) {
                     case "mapbench":
                         reader = new MapbenchLogReader();
@@ -55,12 +57,15 @@ public class ScoresComparator {
                     case "render":
                         reader = new RenderLogReader();
                         break;
+                    case "J2DBench":
+                        reader = new J2DBenchLogReader();
+                        break;
                 }
             }
             if (reader != null)
                 return reader;
         }
-        throw new UnknownLogReaderException(CURRENT_TESTRESULTS_FILE);
+        throw new UnknownLogReaderException(readerName);
     }
 
     static void readArgs(String[] args) throws UnknownLogReaderException {
