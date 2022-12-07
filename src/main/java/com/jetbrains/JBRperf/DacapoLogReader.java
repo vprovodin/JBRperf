@@ -31,7 +31,7 @@ Using scaled threading model. 8 processors detected, 8 threads used to drive the
             String[] arr = line.split(" ");
 
             String scoreName = arr[3].trim();
-            metrics.add(i, scoreName);
+            metrics.add(i++, scoreName);
             values.put(scoreName, Float.valueOf(arr[6].trim()));
         }
     }
