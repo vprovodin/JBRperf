@@ -32,9 +32,11 @@ abstract public class OneScoreLogReader extends DataLogReader {
 
         String fileName = getScoreFile(outDir);
         PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
+        String measure = (ScoresComparator.RESULT_INTERPRETER == ResultInterpreter.higher_better) ? "FPS" : "ms";
+
         for (int i = 0; i < metrics.size() - 1; i++) {
             float value = values.get(metrics.get(i));
-            printWriter.println(metrics.get(i) +"\t" + value);
+            printWriter.println(metrics.get(i) +"\t" + value + "\t" + measure);
             scoreMetrics.add(fileName);
         }
         printWriter.close();

@@ -88,6 +88,7 @@ public class MapbenchLogReader extends DataLogReader {
         ArrayList<String> scoreMetrics = new ArrayList<>();
 
         List<String> scores_to_print = Arrays.asList(SCORES_TO_PRINT);
+        String measure = (ScoresComparator.RESULT_INTERPRETER == ResultInterpreter.higher_better) ? "FPS" : "ms";
 
         for (int i = 0; i < scores.length - 1; i++) {
 
@@ -98,7 +99,8 @@ public class MapbenchLogReader extends DataLogReader {
             PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
             printWriter.println(scores[0] + "\t" + scores[i + 1]);
             for (int j = 0; j < metrics.length; j++)
-                printWriter.printf(Locale.UK, "%-50s\t%7.2f%n", metrics[j].trim() + "." + scores[i + 1], values[j][i+1]);
+                printWriter.printf(Locale.UK, "%-50s\t%7.2f%n\t%s",
+                        metrics[j].trim() + "." + scores[i + 1], values[j][i+1], measure);
 
             printWriter.close();
             scoreMetrics.add(fileName);
