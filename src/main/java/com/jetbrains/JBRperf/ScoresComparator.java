@@ -50,7 +50,7 @@ public class ScoresComparator {
             String[] arr = CURRENT_TESTRESULTS_FILE.split(delimiter);
             if (arr.length > 0) {
                 readerName = arr[0];
-                switch (arr[0]) {
+                switch (readerName) {
                     case "mapbench":
                         reader = new MapbenchLogReader();
                         break;
@@ -59,6 +59,9 @@ public class ScoresComparator {
                         break;
                     case "J2DBench":
                         reader = new J2DBenchLogReader();
+                        break;
+                    case "dacapo":
+                        reader = new DacapoLogReader();
                         break;
                 }
             }
