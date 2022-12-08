@@ -19,18 +19,19 @@ public class JavaDrawLogReader extends OneScoreLogReader {
         while (input.hasNextLine()) {
             String line = input.nextLine();
             if (line.trim().length() == 0) continue;
+            if (!line.trim().startsWith("Display") && !line.trim().startsWith("Plus")) continue;
             if (line.contains("Total")) break;
 
-            String scoreName = line.substring(0,39).trim().replace(" ", "_");
-            String frames = line.substring(38,47).trim();
-            String fps = line.substring(47,56).trim();
+            String scoreName = line.substring(0,33).trim().replace(" ", "_");
+            String frames = line.substring(33,42).trim();
+            String fps = line.substring(42,51).trim();
 
             metrics.add(i++, scoreName);
-            values.put(scoreName, Float.valueOf(fps));
+            values.put(scoreName, Float.valueOf(fps.replace(",", ".")));
         }
     }
 
-    public static final String SCORES_FILE_NAME = "JavaDraw.txt";
+    public static final String SCORES_FILE_NAME = "JavaDraw_scores.txt";
     public static final String REGRESSION_FILE_NAME = "regression.txt";
 
     String getScoreFile(String path, String score) {
