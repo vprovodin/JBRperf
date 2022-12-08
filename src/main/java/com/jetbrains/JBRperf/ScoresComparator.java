@@ -63,6 +63,9 @@ public class ScoresComparator {
                     case "dacapo":
                         reader = new DacapoLogReader();
                         break;
+                    case "JavaDraw":
+                        reader = new JavaDrawLogReader();
+                        break;
                 }
             }
             if (reader != null)
