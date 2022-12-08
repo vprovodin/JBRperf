@@ -8,6 +8,7 @@ public class DacapoLogReader extends OneScoreLogReader {
 
     DacapoLogReader() {
         super("DacapoLogReader");
+        metricWidthMax = 10;
     }
 
     public void readLog(String logFilePath) throws FileNotFoundException {

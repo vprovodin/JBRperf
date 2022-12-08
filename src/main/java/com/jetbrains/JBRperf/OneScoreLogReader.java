@@ -4,8 +4,11 @@ import java.io.*;
 import java.util.*;
 
 abstract public class OneScoreLogReader extends DataLogReader {
+
     ArrayList<String> metrics = new ArrayList<String>();
     HashMap<String, Float> values = new HashMap<String, Float>();
+
+    protected int metricWidthMax = 50;
 
     protected OneScoreLogReader(String readerName) {
         super(readerName);
@@ -99,7 +102,7 @@ abstract public class OneScoreLogReader extends DataLogReader {
             } else {
                 printWriter.print(ScoresComparator.PASSED_SIGN);
             }
-            printWriter.printf(Locale.UK, "%-50s\t%7.2f\t%7.2f\t%6.2f\t%5.2f%n",
+            printWriter.printf(Locale.UK, "%-" + metricWidthMax + "s\t%7.2f\t%7.2f\t%6.2f\t%5.2f%n",
                     scoreNameValue[0], referenceValue, currentValue, diff, deviation);
             ScoresComparator.logger.logTC("##teamcity[testFinished name=\'" + fullTestName + "\' duration=\'" + diff + "\']");
         }
