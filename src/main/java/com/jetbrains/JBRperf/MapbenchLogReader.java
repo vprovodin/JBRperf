@@ -98,9 +98,12 @@ public class MapbenchLogReader extends DataLogReader {
 
             PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
             printWriter.println(scores[0] + "\t" + scores[i + 1]);
-            for (int j = 0; j < metrics.length; j++)
-                printWriter.printf(Locale.UK, "%-50s\t%7.2f%n\t%s",
-                        metrics[j].trim() + "." + scores[i + 1], values[j][i+1], measure);
+            for (int j = 0; j < metrics.length; j++) {
+                printWriter.printf(Locale.UK, "%-50s\t%7.2f\t%s%n",
+                        metrics[j].trim() + "." + scores[i + 1], values[j][i + 1], measure);
+                System.out.printf(Locale.UK, "%-50s\t%7.2f\t%s%n",
+                        metrics[j].trim() + "." + scores[i + 1], values[j][i + 1], measure);
+            }
 
             printWriter.close();
             scoreMetrics.add(fileName);
