@@ -66,6 +66,9 @@ public class ScoresComparator {
                     case "JavaDraw":
                         reader = new JavaDrawLogReader();
                         break;
+                    case "LightBeam":
+                        reader = new LightBeamLogReader();
+                        break;
                 }
             }
             if (reader != null)
