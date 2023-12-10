@@ -75,7 +75,7 @@ abstract public class OneScoreLogReader extends DataLogReader {
             String fullTestName = scoreNameValue[0].trim();
             ScoresComparator.logger.logTC("##teamcity[testStarted name=\'" + fullTestName + "\']");
 
-            float currentValue = values.get(fullTestName);
+            float currentValue = values.containsKey(fullTestName) ? values.get(fullTestName) : Float.NaN;
             float referenceValue;
             try {
                 referenceValue = Float.valueOf(scoreNameValue[1]);
