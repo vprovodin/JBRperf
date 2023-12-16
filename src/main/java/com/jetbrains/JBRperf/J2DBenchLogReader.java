@@ -20,8 +20,10 @@ public class J2DBenchLogReader extends OneScoreLogReader {
             if (scores.length == 0) break;
 
             String scoreName = scores[0].trim();
-            metrics.add(i++, scoreName);
-            values.put(scoreName, Float.valueOf(scores[1].trim()));
+            if (scores.length > 1) {
+                metrics.add(i++, scoreName);
+                values.put(scoreName, Float.valueOf(scores[1].trim()));
+            }
         }
     }
 
