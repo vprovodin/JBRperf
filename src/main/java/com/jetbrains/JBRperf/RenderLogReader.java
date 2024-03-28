@@ -16,13 +16,32 @@ public class RenderLogReader extends OneScoreLogReader {
         int i = 0;
         while (input.hasNextLine()) {
             String line = input.nextLine();
-            if (line.startsWith("#") || !line.contains(":") || !line.contains("FPS")) continue;
 
+             // System.out.println("Line: " + line);
+
+            if (line.startsWith("#") || line.startsWith("[")
+                    || !line.contains(":")) continue;
+
+            // Check legend (24.02):
+            if (line.startsWith("Test Name")) {
+                // System.out.println("LINE:" + line);
+                if (line.contains("Median(TimeMs)")) {
+                    System.out.println("Unsupported Time unit (expected FPS results) !");
+                    return;
+                }
+                continue;
+            }
+
+            // only supports single FPS score:
+            if (!line.contains("FPS")) continue;
             String[] scores = line.split(":");
             if (scores.length == 0) break;
 
             String scoreName = scores[0].trim();
-            metrics.add(i++, scoreName);
+            // Avoid repeated metrics:
+            if (!metrics.contains(scoreName)) {
+                metrics.add(i++, scoreName);
+            }
             values.put(scoreName, Float.valueOf(scores[1].trim().split(" ")[0].replace(",",".")));
         }
     }
