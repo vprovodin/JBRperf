@@ -8,6 +8,7 @@ abstract public class OneScoreLogReader extends DataLogReader {
     ArrayList<String> metrics = new ArrayList<String>();
     HashMap<String, Float> values = new HashMap<String, Float>();
 
+    protected String measureName = "FPS";
     protected int metricWidthMax = 50;
 
     protected OneScoreLogReader(String readerName) {
@@ -35,11 +36,11 @@ abstract public class OneScoreLogReader extends DataLogReader {
 
         String fileName = getScoreFile(outDir);
         PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
-        String measure = (ScoresComparator.RESULT_INTERPRETER == ResultInterpreter.higher_better) ? "FPS" : "ms";
+        String measure = (ScoresComparator.RESULT_INTERPRETER == ResultInterpreter.higher_better) ? measureName : "ms";
 
-        for (int i = 0; i < metrics.size(); i++) {
-            float value = values.get(metrics.get(i));
-            printWriter.println(metrics.get(i) +"\t" + value + "\t" + measure);
+        for (String metric : metrics) {
+            float value = values.get(metric);
+            printWriter.println(metric + "\t" + value + "\t" + measure);
             scoreMetrics.add(fileName);
         }
         printWriter.close();
@@ -75,7 +76,7 @@ abstract public class OneScoreLogReader extends DataLogReader {
             String fullTestName = scoreNameValue[0].trim();
             ScoresComparator.logger.logTC("##teamcity[testStarted name=\'" + fullTestName + "\']");
 
-            float currentValue = values.containsKey(fullTestName) ? values.get(fullTestName) : Float.NaN;
+            float currentValue = values.getOrDefault(fullTestName, Float.NaN);
             float referenceValue;
             try {
                 referenceValue = Float.valueOf(scoreNameValue[1]);
