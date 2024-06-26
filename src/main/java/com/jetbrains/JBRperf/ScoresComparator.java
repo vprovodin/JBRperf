@@ -40,7 +40,7 @@ public class ScoresComparator {
     static final String FAILED_SIGN = " * ";
     static final String PASSED_SIGN = "   ";
 
-    static final private String [] delimiters = {"_", "\\."};
+    static final private String [] delimiters = {"_", "\\.","-"};
 
     static DataLogReader identifyLogReader() throws UnknownLogReaderException {
         DataLogReader reader = null;
@@ -68,6 +68,9 @@ public class ScoresComparator {
                         break;
                     case "LightBeam":
                         reader = new LightBeamLogReader();
+                        break;
+                    case "specjbb2015":
+                        reader = new SPECjbbReader2015LogReader();
                         break;
                 }
             }
