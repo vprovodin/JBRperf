@@ -75,10 +75,12 @@ abstract public class OneScoreLogReader extends DataLogReader {
 
             String fullTestName = scoreNameValue[0].trim();
             ScoresComparator.logger.logTC("##teamcity[testStarted name=\'" + fullTestName + "\']");
+            ScoresComparator.logger.log("scoreNameValue[0]: " + scoreNameValue[0]);
 
             float currentValue = values.getOrDefault(fullTestName, Float.NaN);
             float referenceValue;
             try {
+                ScoresComparator.logger.log("scoreNameValue[1]: " + scoreNameValue[1]);
                 referenceValue = Float.valueOf(scoreNameValue[1]);
             } catch (NumberFormatException e) {
                 referenceValue = Float.valueOf(scoreNameValue[1].replace(',', '.'));
