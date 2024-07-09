@@ -21,7 +21,7 @@ public class RenderLogReader extends OneScoreLogReader {
             String[] scores = line.split(":");
             if (scores.length == 0) break;
 
-            String scoreName = scores[0].trim();
+            String scoreName = scores[0].trim().split("\\[")[0];
             metrics.add(i++, scoreName);
             values.put(scoreName, Float.valueOf(scores[1].trim().split(" ")[0].replace(",",".")));
         }

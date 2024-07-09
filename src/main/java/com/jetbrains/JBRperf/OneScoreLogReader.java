@@ -73,9 +73,9 @@ abstract public class OneScoreLogReader extends DataLogReader {
             String line = input.nextLine();
             String[] scoreNameValue = line.split("\t");
 
-            String fullTestName = scoreNameValue[0].trim();
+            String fullTestName = scoreNameValue[0].trim().split("\\[")[0];
             ScoresComparator.logger.logTC("##teamcity[testStarted name=\'" + fullTestName + "\']");
-            ScoresComparator.logger.log("scoreNameValue[0]: " + scoreNameValue[0]);
+            ScoresComparator.logger.log("scoreNameValue[0]: " + fullTestName);
 
             float currentValue = values.getOrDefault(fullTestName, Float.NaN);
             float referenceValue;
