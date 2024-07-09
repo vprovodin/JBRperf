@@ -53,7 +53,7 @@ abstract public class OneScoreLogReader extends DataLogReader {
         String scoreFileName = getScoreFile(referenceDir);
         File file = new File(scoreFileName);
         if ( !file.exists()) {
-            ScoresComparator.logger.log(scoreFileName + " does not exist, skipping scores comnparison");
+            ScoresComparator.logger.log(scoreFileName + " does not exist, skipping scores comparison");
             return;
         }
         Scanner input = new Scanner(file);
