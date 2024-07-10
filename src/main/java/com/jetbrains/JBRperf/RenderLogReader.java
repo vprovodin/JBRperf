@@ -16,14 +16,15 @@ public class RenderLogReader extends OneScoreLogReader {
         int i = 0;
         while (input.hasNextLine()) {
             String line = input.nextLine();
-            if (line.startsWith("#") || !line.contains(":") || !line.contains("FPS")) continue;
+            if (line.startsWith("#") || !line.contains(":") || !line.contains(" FPS")) continue;
 
             String[] scores = line.split(":");
             if (scores.length == 0) break;
 
             String scoreName = scores[0].trim().split("\\[")[0];
             metrics.add(i++, scoreName);
-            values.put(scoreName, Float.valueOf(scores[1].trim().split(" ")[0].replace(",",".")));
+            String median = scores[1].trim().split(" ± ")[0].trim().replace(",",".");
+            values.put(scoreName, Float.valueOf(median));
         }
     }
 
